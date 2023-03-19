@@ -1,0 +1,58 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// App model
+model App {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  // url         String
+  users       User[]  @relation("UserApp")
+
+  fullAnalyticsRecords    FullAnalyticsRecord[]
+  limitedAnalyticsRecords LimitedAnalyticsRecord[]
+  appLogsRecords          AppLogsRecord[]
+  githubUpdateRepo        String?
+}
+
+// User model
+model User {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  name         String?
+  passwordHash String
+  apps         App[]   @relation("UserApp")
+}
+
+// Analytics model represents a single analytics record for an app.
+model FullAnalyticsRecord {
+  id          String  @id @default(uuid())
+  deviceModel String
+  deviceOs    String
+  firstLaunch Boolean
+  langRegion  String
+  app         App     @relation(fields: [appId], references: [id])
+  appId       String
+  appVersion  String
+}
+
+model LimitedAnalyticsRecord {
+  id          String  @id @default(uuid())
+  firstLaunch Boolean
+  app         App     @relation(fields: [appId], references: [id])
+  appId       String
+  appVersion  String
+}
+
+model AppLogsRecord {
+  id    String @id @default(uuid())
+  logs  String
+  app   App    @relation(fields: [appId], references: [id])
+  appId String
+}

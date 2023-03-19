@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=db
+      - POSTGRES_PASSWORD=ca6a70f64cef
+    volumes:
+      - postgres:/data/postgresql
+    ports:
+      - 5432:5432
+
+  app:
+    build: .
+    image: analytics
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://db:ca6a70f64cef@postgres:5432/analyticdb?schema=public
+      - JWT_SECRET=836a68b8c286
+      - PORT=8080
+
+volumes:
+  postgres:
