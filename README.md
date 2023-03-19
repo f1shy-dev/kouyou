@@ -1,6 +1,6 @@
 # ✨ kouyou
 
-### a simple analytics server (for ios, android/mac someday)
+a simple analytics server (for ios, android/mac someday)
 
 ##  used by
 
