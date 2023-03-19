@@ -39,6 +39,18 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
+app.get("/", async (req: Request, res: Response) => {
+  res.json({
+    message: `kouyou analytics server${
+      process.env.npm_package_version
+        ? " v" + process.env.npm_package_version
+        : ""
+    }`,
+    apps: await (await prisma.app.findMany()).length,
+    users: await (await prisma.user.findMany()).length,
+  });
+});
+
 app.post("/api/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
