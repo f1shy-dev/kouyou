@@ -7,7 +7,7 @@ import {
   PrismaClient,
 } from "@prisma/client";
 import { aggregateFullAnalytics, aggregateLimitedAnalytics } from "./agregrate";
-
+import fetch from "node-fetch";
 const prisma = new PrismaClient();
 const app = express();
 const port = process.env.PORT || 7979;
@@ -80,7 +80,7 @@ app.get("/api/apps", verifyToken, async (req: Request, res: Response) => {
 
 app.post("/api/apps", verifyToken, async (req: Request, res: Response) => {
   const userId = req.userId;
-  const { name, description } = req.body;
+  const { name, description, githubUpdateRepo } = req.body;
 
   if (!name) {
     return res.status(400).json({ message: "Name is required" });
@@ -90,6 +90,7 @@ app.post("/api/apps", verifyToken, async (req: Request, res: Response) => {
     data: {
       name,
       description,
+      githubUpdateRepo,
       users: {
         connect: { id: userId },
       },
@@ -102,6 +103,15 @@ app.post("/api/apps", verifyToken, async (req: Request, res: Response) => {
 app.post("/api/apps/:id/analytics", async (req: Request, res: Response) => {
   const appId = req.params.id;
   const data = req.body;
+  const app = await prisma.app.findUnique({
+    where: {
+      id: appId,
+    },
+  });
+  if (!app) {
+    return res.status(404).json({ message: "App not found" });
+  }
+
   if (data.type === "full") {
     const actualData = data as FullAnalyticsRecord;
     if (
@@ -115,7 +125,7 @@ app.post("/api/apps/:id/analytics", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid data" });
     }
 
-    const analytics = await prisma.fullAnalyticsRecord.create({
+    const analyticsPromise = prisma.fullAnalyticsRecord.create({
       data: {
         app: {
           connect: { id: appId },
@@ -127,6 +137,21 @@ app.post("/api/apps/:id/analytics", async (req: Request, res: Response) => {
         appVersion: actualData.appVersion,
       },
     });
+    if (app.githubUpdateRepo) {
+      const updatePromise = fetch(
+        `https://api.github.com/repos/${app.githubUpdateRepo}/releases`
+      );
+      const [analytics, updateReq] = await Promise.all([
+        analyticsPromise,
+        updatePromise,
+      ]);
+      const updateData = await updateReq.json();
+      return res.json({
+        message: "ok",
+        updates: updateData,
+      });
+    }
+    await analyticsPromise;
     res.json({ message: "ok" });
   }
 
@@ -140,7 +165,7 @@ app.post("/api/apps/:id/analytics", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid data" });
     }
 
-    const analytics = await prisma.limitedAnalyticsRecord.create({
+    const analyticsPromise = prisma.limitedAnalyticsRecord.create({
       data: {
         app: {
           connect: { id: appId },
@@ -149,6 +174,21 @@ app.post("/api/apps/:id/analytics", async (req: Request, res: Response) => {
         appVersion: actualData.appVersion,
       },
     });
+    if (app.githubUpdateRepo) {
+      const updatePromise = fetch(
+        `https://api.github.com/repos/${app.githubUpdateRepo}/releases`
+      );
+      const [analytics, updateReq] = await Promise.all([
+        analyticsPromise,
+        updatePromise,
+      ]);
+      const updateData = await updateReq.json();
+      return res.json({
+        message: "ok",
+        updates: updateData,
+      });
+    }
+    await analyticsPromise;
     res.json({ message: "ok" });
   }
   res.status(400).json({ message: "Invalid data" });

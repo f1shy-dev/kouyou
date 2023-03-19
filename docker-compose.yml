@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  postgres:
+  postgresdb:
     image: postgres:latest
     restart: always
     environment:
@@ -18,9 +18,9 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      - postgresdb
     environment:
-      - DATABASE_URL=postgresql://db:ca6a70f64cef@postgres:5432/analyticdb?schema=public
+      - DATABASE_URL=postgresql://db:ca6a70f64cef@postgresdb:5432/analyticdb?schema=public
       - JWT_SECRET=836a68b8c286
       - PORT=8080
 
