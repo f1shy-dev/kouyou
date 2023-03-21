@@ -9,6 +9,7 @@ const port = process.env.PORT || 7979;
 const versionString = process.env.npm_package_version
   ? " v" + process.env.npm_package_version
   : "";
+
 declare global {
   namespace Express {
     interface Request {
