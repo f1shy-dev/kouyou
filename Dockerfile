@@ -17,10 +17,14 @@ RUN yarn run build
 
 FROM node:19-alpine
 
-COPY --from=builder /app/node_modules ./node_modules
+# COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/yarn.lock ./
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/prisma ./prisma
+
+RUN yarn install --production
 
 EXPOSE 8080
 # 👇 new migrate and start app script

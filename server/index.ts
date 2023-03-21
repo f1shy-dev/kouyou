@@ -6,7 +6,7 @@ import userRouter from "./routes/user.router";
 import next from "next";
 
 const app = express();
-const nextApp = next({ dev: process.env.NODE_ENV !== "production" });
+const nextApp = next({ dev: process.env.NODE_ENV == "development" });
 const handle = nextApp.getRequestHandler();
 const port = process.env.PORT || 7979;
 const versionString = process.env.npm_package_version
