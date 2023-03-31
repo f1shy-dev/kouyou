@@ -8,7 +8,9 @@ export const verifyToken = (
   const cookies = context.req.headers.cookie;
   const token =
     context.req.headers.authorization?.split(" ")[1] ||
-    cookies?.split("auth_token=")[1].split(";")[0] ||
+    (cookies &&
+      cookies?.split("auth_token=") &&
+      cookies?.split("auth_token=")[1].split(";")[0]) ||
     "";
 
   if (!token) {
