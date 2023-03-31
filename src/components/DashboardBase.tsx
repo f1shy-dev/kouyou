@@ -19,8 +19,8 @@ export const DashboardBase: React.FC<{ children: React.ReactNode, activeTab: str
 
             <button className="bg-purple-500 px-6 py-2 rounded-lg text-center ml-4" onClick={() => {
                 //clear cookie and redirect to login
-                // document.cookie.split(";").forEach((c) => { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
-                localStorage.removeItem("token");
+                document.cookie.split(";").forEach((c) => { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+                // localStorage.removeItem("token");
                 window.location.href = "/login";
             }}>
                 <h1 className="text-purple-50/90">Logout</h1>

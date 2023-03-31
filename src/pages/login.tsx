@@ -49,7 +49,7 @@ const Login = () => {
                             });
                             const authResponse = await authRequest.json();
                             if (authRequest.status === 200) {
-                                localStorage.setItem("token", authResponse.token);
+                                // localStorage.setItem("token", authResponse.token);
                                 // document.cookie = 
                                 window.location.href = "/dashboard";
                             } else {

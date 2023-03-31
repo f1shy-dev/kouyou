@@ -5,11 +5,10 @@ import { ParsedUrlQuery } from "querystring";
 export const verifyToken = (
   context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
 ) => {
-  // const cookies = context.req.headers.cookie;
+  const cookies = context.req.headers.cookie;
   const token =
     context.req.headers.authorization?.split(" ")[1] ||
-    (localStorage && localStorage.getItem("token")) ||
-    // cookies?.split("auth_token=")[1].split(";")[0] ||
+    cookies?.split("auth_token=")[1].split(";")[0] ||
     "";
 
   if (!token) {

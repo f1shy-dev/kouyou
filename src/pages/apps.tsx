@@ -4,17 +4,16 @@ import { useEffect, useState } from "react";
 import { HomepageCard } from "../components/HomepageCard";
 import { DashboardBase } from "../components/DashboardBase";
 import { Button } from "../components/Button";
-import { BeakerIcon, CogIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { useSWR, authFetcher } from "../helpers/fetcher";
+import { BeakerIcon, CogIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useSWR, fetcher } from "../helpers/fetcher";
 type Stats = {
     users: number;
     apps: number;
 };
 
 const Dashboard = () => {
-    const { data, error, isLoading } = useSWR<{ apps: string, users: string }>('/api/apps', authFetcher)
-
-
+    const { data, error, isLoading } = useSWR('/api/apps', fetcher)
+    const [createModalVisible, setCreateModalVisible] = useState(false);
 
     return (
         <DashboardBase activeTab="apps">
@@ -22,7 +21,13 @@ const Dashboard = () => {
                 <div className="w-full flex flex-row items-center">
                     <span className="text-2xl font-bold text-purple-50">Apps</span>
                     <div className="flex-grow"></div>
-                    <Button text="Create new app" icon={<PlusIcon />}></Button>
+                    <Button text="Create new app" icon={<PlusIcon />}
+                        onClick={() => {
+                            //input name
+                            //create app
+                            setCreateModalVisible(true)
+
+                        }}></Button>
                 </div>
 
                 <div className="mt-4"></div>
@@ -35,6 +40,18 @@ const Dashboard = () => {
                     <Button text="Settings" icon={<CogIcon />} />
                 </div>
             </div>
+            {createModalVisible && 
+            <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 flex justify-center items-center">
+                <div className="flex flex-col max-w-lg w-full bg-green-500">
+                    <div className="flex flex-row w-full">
+                        <span className="text-lg font-bold text-purple-50">Create new app</span>
+                        <div className="flex-grow"></div>
+                        {/* <Button */}
+                        <div className="w-6 h-6 bg-black/50 rounded-lg text-white m-2"><XMarkIcon/></div>
+                    </div>
+                </div>
+            </div>
+            }
         </ DashboardBase>
     )
 }
