@@ -5,7 +5,7 @@ const Index = () => <></>
 export default Index;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const authorised = verifyToken(context)
+  const [authorised, user] = verifyToken(context)
 
   if (!authorised) {
     return {

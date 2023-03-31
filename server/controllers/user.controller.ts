@@ -26,8 +26,19 @@ export const loginUser = async (
     expiresIn: "1h",
   });
 
-  res.header("set-cookie", `auth_token=${token}; path=/; httpOnly=true;`);
+  res.header(
+    "set-cookie",
+    `auth_token=${token}; path=/; httpOnly=true; max-age=3600`
+  );
   res.json({ token });
+};
+
+export const logoutUser = async (
+  req: Request,
+  res: Response
+): Promise<void | Response<any, any>> => {
+  res.header("set-cookie", `auth_token=; path=/; httpOnly=true; max-age=0`);
+  res.json({ message: "logged out" });
 };
 
 //change password

@@ -4,6 +4,7 @@ import prisma from "./helpers/client";
 import appRouter from "./routes/app.router";
 import userRouter from "./routes/user.router";
 import next from "next";
+import { PrismaClient } from "@prisma/client";
 
 const app = express();
 const nextApp = next({ dev: process.env.NODE_ENV == "development" });
@@ -32,8 +33,12 @@ app.get("/api", async (req: Request, res: Response) => {
 app.use("/api/apps", appRouter);
 app.use("/api/users", userRouter);
 
+type CustomRequest = Request & { prisma: PrismaClient };
+
 nextApp.prepare().then(() => {
-  app.get("*", (req, res) => {
+  app.get("*", (creq, res) => {
+    const req = creq as CustomRequest;
+    req.prisma = prisma;
     return handle(req, res);
   });
 

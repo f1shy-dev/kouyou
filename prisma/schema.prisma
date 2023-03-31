@@ -19,6 +19,7 @@ model App {
   limitedAnalyticsRecords LimitedAnalyticsRecord[]
   appLogsRecords          AppLogsRecord[]
   githubUpdateRepo        String?
+  iconURL                 String?
 }
 
 // User model

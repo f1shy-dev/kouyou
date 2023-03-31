@@ -36,7 +36,7 @@ export const createApp = async (
     return res.status(401).json({ message: "only admins can make apps" });
   }
 
-  const { name, description, githubUpdateRepo } = req.body;
+  const { name, description, githubUpdateRepo, iconURL } = req.body;
 
   if (!name) {
     return res.status(400).json({ message: "field 'name' is required" });
@@ -53,6 +53,7 @@ export const createApp = async (
       name,
       description,
       githubUpdateRepo,
+      iconURL,
       users: {
         connect: { id: userId },
       },
@@ -60,6 +61,153 @@ export const createApp = async (
   });
 
   res.json(app);
+};
+
+export const patchApp = async (
+  req: Request,
+  res: Response
+): Promise<void | Response<any, any>> => {
+  const userId = req.userId;
+  //only admins can patch apps
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (user?.isAdmin !== true) {
+    return res.status(401).json({ message: "only admins can patch apps" });
+  }
+
+  const app = await prisma.app.findFirst({
+    where: {
+      id: req.params.id,
+      users: {
+        some: {
+          id: userId,
+        },
+      },
+    },
+  });
+
+  if (!app) {
+    return res.status(404).json({ message: "App not found" });
+  }
+
+  const { name, description, githubUpdateRepo, iconURL } = req.body;
+
+  // only update fields that are supplied
+  const d = (s: string) => (s != null ? s : undefined);
+  const updatedApp = await prisma.app.update({
+    where: {
+      id: req.params.id,
+    },
+    data: {
+      name: d(name),
+      description: d(description),
+      githubUpdateRepo: d(githubUpdateRepo),
+      iconURL: d(iconURL),
+    },
+  });
+
+  res.json(updatedApp);
+};
+
+export const deleteAnalyticsForApp = async (
+  req: Request,
+  res: Response
+): Promise<void | Response<any, any>> => {
+  const userId = req.userId;
+  //only admins can delete apps
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (user?.isAdmin !== true) {
+    return res.status(401).json({ message: "only admins can delete app data" });
+  }
+
+  const app = await prisma.app.findFirst({
+    where: {
+      id: req.params.id,
+      users: {
+        some: {
+          id: userId,
+        },
+      },
+    },
+  });
+
+  if (!app) {
+    return res.status(404).json({ message: "App not found" });
+  }
+
+  await prisma.limitedAnalyticsRecord.deleteMany({
+    where: {
+      app: {
+        id: req.params.id,
+      },
+    },
+  });
+
+  await prisma.fullAnalyticsRecord.deleteMany({
+    where: {
+      app: {
+        id: req.params.id,
+      },
+    },
+  });
+
+  res.json({ message: "App deleted successfully" });
+};
+
+export const deleteApp = async (
+  req: Request,
+  res: Response
+): Promise<void | Response<any, any>> => {
+  const userId = req.userId;
+  //only admins can delete apps
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (user?.isAdmin !== true) {
+    return res.status(401).json({ message: "only admins can delete apps" });
+  }
+
+  const app = await prisma.app.findFirst({
+    where: {
+      id: req.params.id,
+      users: {
+        some: {
+          id: userId,
+        },
+      },
+    },
+  });
+
+  if (!app) {
+    return res.status(404).json({ message: "App not found" });
+  }
+
+  await prisma.app.delete({
+    where: {
+      id: req.params.id,
+    },
+  });
+
+  await prisma.limitedAnalyticsRecord.deleteMany({
+    where: {
+      app: {
+        id: req.params.id,
+      },
+    },
+  });
+
+  await prisma.fullAnalyticsRecord.deleteMany({
+    where: {
+      app: {
+        id: req.params.id,
+      },
+    },
+  });
+
+  res.json({ message: "App deleted successfully" });
 };
 
 export const getAppDetails = async (
