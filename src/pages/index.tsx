@@ -1,17 +1,25 @@
 import { GetServerSideProps } from "next";
 import { verifyToken } from "../helpers/verifyToken";
 
-export default ({ authorised }: { authorised: boolean }) => {
-  return (
-    authorised ? <h1>Authorised</h1> : <h1>Not Authorised</h1>
-  );
-}
+const Index = () => <></>
+export default Index;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const authorised = verifyToken(context)
+
+  if (!authorised) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
   return {
-    props: {
-      authorised,
-    }, // will be passed to the page component as props
+    redirect: {
+      destination: "/dashboard",
+      permanent: false,
+    },
   };
 }

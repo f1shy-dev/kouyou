@@ -5,13 +5,18 @@ import { ParsedUrlQuery } from "querystring";
 export const verifyToken = (
   context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
 ) => {
-  const token = (context.req.headers.authorization || "").split(" ")[1];
+  // const cookies = context.req.headers.cookie;
+  const token =
+    context.req.headers.authorization?.split(" ")[1] ||
+    (localStorage && localStorage.getItem("token")) ||
+    // cookies?.split("auth_token=")[1].split(";")[0] ||
+    "";
 
   if (!token) {
     return false;
   }
 
-  jwt.verify(token, process.env.JWT_SECRET!, (err, decoded: any) => {
+  return jwt.verify(token, process.env.JWT_SECRET!, (err, decoded: any) => {
     if (err) {
       return false;
     }

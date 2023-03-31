@@ -26,6 +26,7 @@ export const loginUser = async (
     expiresIn: "1h",
   });
 
+  res.header("set-cookie", `auth_token=${token}; path=/; httpOnly=true;`);
   res.json({ token });
 };
 

@@ -13,14 +13,6 @@ const versionString = process.env.npm_package_version
   ? " v" + process.env.npm_package_version
   : "";
 
-declare global {
-  namespace Express {
-    interface Request {
-      userId?: string;
-    }
-  }
-}
-
 app.use(bodyParser.json());
 
 // app.get("/", (req: Request, res: Response) => {

@@ -6,7 +6,11 @@ export const verifyToken = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = (req.headers.authorization || "").split(" ")[1];
+  const cookies = req.headers.cookie;
+  const token =
+    req.headers.authorization?.split(" ")[1] ||
+    cookies?.split("auth_token=")[1].split(";")[0] ||
+    "";
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });

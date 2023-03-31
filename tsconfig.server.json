@@ -12,5 +12,6 @@
     "noEmit": false,
   },
   "include": ["server/**/*.ts"],
+  "files": ["server/custom.d.ts"]
 //   "exclude": [".next"]
 }
