@@ -20,41 +20,46 @@ model App {
   appLogsRecords          AppLogsRecord[]
   githubUpdateRepo        String?
   iconURL                 String?
+  createdAt               DateTime                 @default(now())
 }
 
 // User model
 model User {
-  id           String  @id @default(uuid())
-  email        String  @unique
+  id           String   @id @default(uuid())
+  email        String   @unique
   name         String?
   passwordHash String
-  isAdmin      Boolean @default(false)
-  apps         App[]   @relation("UserApp")
+  isAdmin      Boolean  @default(false)
+  apps         App[]    @relation("UserApp")
+  createdAt    DateTime @default(now())
 }
 
 // Analytics model represents a single analytics record for an app.
 model FullAnalyticsRecord {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   deviceModel String
   deviceOs    String
   firstLaunch Boolean
   langRegion  String
-  app         App     @relation(fields: [appId], references: [id])
+  app         App      @relation(fields: [appId], references: [id])
   appId       String
   appVersion  String
+  date        DateTime
 }
 
 model LimitedAnalyticsRecord {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   firstLaunch Boolean
-  app         App     @relation(fields: [appId], references: [id])
+  app         App      @relation(fields: [appId], references: [id])
   appId       String
   appVersion  String
+  date        DateTime
 }
 
 model AppLogsRecord {
-  id    String @id @default(uuid())
+  id    String   @id @default(uuid())
   logs  String
-  app   App    @relation(fields: [appId], references: [id])
+  app   App      @relation(fields: [appId], references: [id])
   appId String
+  date  DateTime
 }

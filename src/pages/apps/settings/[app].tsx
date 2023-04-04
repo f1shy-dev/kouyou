@@ -57,12 +57,14 @@ const Dashboard = ({ app }: { app: App }) => {
                             <InputField type="text" label="GitHub updates repo" placeholder="kouyou/your_app" setValue={(v) => { setFormData({ ...formData, githubUpdateRepo: v, }) }} value={formData.githubUpdateRepo} />
                             <InputField type="text" label="Icon URL" placeholder="https://cdn.kouyou.local/your-app-512px.png" setValue={(v) => { setFormData({ ...formData, iconURL: v, }) }} value={formData.iconURL} />
                             <Button text="Update app info" disabled={(formData.name == data?.name && formData.iconURL == data?.iconURL && formData.description == data?.description && formData.githubUpdateRepo == data?.githubUpdateRepo)} className="w-fit" onClick={async () => {
+                                let nfData = { ...formData, fullAnalytics: null, limitedAnalytics: null };
+
                                 const res = await fetch("/api/apps/" + app.id, {
                                     method: "PATCH",
                                     headers: {
                                         "Content-Type": "application/json",
                                     },
-                                    body: JSON.stringify(formData),
+                                    body: JSON.stringify(nfData),
                                 });
                                 const json = await res.json();
                                 if (res.ok) {
@@ -159,5 +161,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
     };
 
-    return { props: { app: (app as App) } };
+    return {
+        props: { app: { ...app, createdAt: app.createdAt.getTime() } as App }
+    };
 }

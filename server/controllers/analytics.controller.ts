@@ -2,7 +2,7 @@
 
 import { FullAnalyticsRecord, LimitedAnalyticsRecord } from "@prisma/client";
 import { Request, Response } from "express";
-import fetch from "node-fetch";
+import { fetch } from "../helpers/cache-fetch";
 import prisma from "../helpers/client";
 
 export const postAnalyticsForApp = async (
@@ -11,6 +11,10 @@ export const postAnalyticsForApp = async (
 ): Promise<void | Response<any, any>> => {
   const appId = req.params.id;
   const data = req.body;
+
+  if (!data || !appId) {
+    return res.status(400).json({ message: "Invalid data" });
+  }
   const app = await prisma.app.findUnique({
     where: {
       id: appId,
@@ -28,7 +32,7 @@ export const postAnalyticsForApp = async (
       !actualData.langRegion ||
       !actualData.appVersion ||
       actualData.appVersion === "" ||
-      actualData.firstLaunch === undefined
+      ![true, false].includes(actualData.firstLaunch)
     ) {
       return res.status(400).json({ message: "Invalid data" });
     }
@@ -43,6 +47,7 @@ export const postAnalyticsForApp = async (
         firstLaunch: actualData.firstLaunch,
         langRegion: actualData.langRegion,
         appVersion: actualData.appVersion,
+        date: new Date(),
       },
     });
     if (app.githubUpdateRepo) {
@@ -60,7 +65,7 @@ export const postAnalyticsForApp = async (
       });
     }
     await analyticsPromise;
-    res.json({ message: "ok" });
+    return res.json({ message: "ok" });
   }
 
   if (data.type === "limited") {
@@ -68,7 +73,7 @@ export const postAnalyticsForApp = async (
     if (
       !actualData.appVersion ||
       actualData.appVersion === "" ||
-      !actualData.firstLaunch
+      ![true, false].includes(actualData.firstLaunch)
     ) {
       return res.status(400).json({ message: "Invalid data" });
     }
@@ -80,6 +85,7 @@ export const postAnalyticsForApp = async (
         },
         firstLaunch: actualData.firstLaunch,
         appVersion: actualData.appVersion,
+        date: new Date(),
       },
     });
     if (app.githubUpdateRepo) {
@@ -97,7 +103,7 @@ export const postAnalyticsForApp = async (
       });
     }
     await analyticsPromise;
-    res.json({ message: "ok" });
+    return res.json({ message: "ok" });
   }
   res.status(400).json({ message: "Invalid data" });
 };

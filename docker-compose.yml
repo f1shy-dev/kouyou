@@ -6,6 +6,7 @@ services:
     environment:
       - POSTGRES_USER=db
       - POSTGRES_PASSWORD=ca6a70f64cef
+      - PGDATA=/data/postgresql
     volumes:
       - postgres:/data/postgresql
     ports:

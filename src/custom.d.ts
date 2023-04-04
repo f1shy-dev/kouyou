@@ -15,11 +15,14 @@ export type App = {
   description?: string;
   githubUpdateRepo?: string;
   iconURL?: string;
+  createdAt: number;
 };
 export type AppWithAnalytics = App & {
   limitedAnalytics: {
     launches: number;
     firstLaunches: number;
+    launchDates: number[];
+    firstLaunchDates: number[];
   };
   fullAnalytics: {
     deviceModels: Record<string, number>;
@@ -27,5 +30,7 @@ export type AppWithAnalytics = App & {
     langRegion: Record<string, number>;
     launches: number;
     firstLaunches: number;
+    launchDates: number[];
+    firstLaunchDates: number[];
   };
 };

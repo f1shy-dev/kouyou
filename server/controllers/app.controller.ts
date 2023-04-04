@@ -244,8 +244,8 @@ export const getAppDetails = async (
 
     res.json({
       ...app,
-      limitedAnalytics: aggregateLimitedAnalytics(limitedAnalytics),
-      fullAnalytics: aggregateFullAnalytics(fullAnalytics),
+      limitedAnalytics: aggregateLimitedAnalytics(limitedAnalytics, req.query),
+      fullAnalytics: aggregateFullAnalytics(fullAnalytics, req.query),
     });
   } catch (e) {
     return res.status(404).json({ message: "App not found" });

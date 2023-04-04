@@ -10,6 +10,7 @@ import {
     CubeIcon,
     CubeTransparentIcon,
     PlusIcon,
+    TrashIcon,
     XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useSWR, fetcher } from "../../helpers/fetcher";
@@ -34,9 +35,19 @@ const Dashboard = ({ apps }: { apps: [App] }) => {
     return (
         <DashboardBase activeTab="apps">
             <div className="flex-grow flex flex-col items-center w-full mt-4 px-4 ">
-                <div className="w-full flex flex-row items-center">
+                <div className="w-full flex flex-row items-center gap-2">
                     <span className="text-2xl font-bold text-base-white">Apps</span>
                     <div className="flex-grow"></div>
+                    <Button
+                        text="Clear GH Cache"
+                        icon={<TrashIcon />}
+                        onClick={async () => {
+                            const res = await fetch("/api/clear-gh-cache");
+                            const json = await res.json();
+                            alert(json.success ? "Cleared cache" : "Failed to clear cache");
+                        }}
+                        className="!bg-orange-500"
+                    ></Button>
                     <Button
                         text="Create new app"
                         icon={<PlusIcon />}
@@ -145,5 +156,5 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
     });
 
-    return { props: { apps: apps as [App] } };
+    return { props: { apps: apps.map(i => ({ ...i, createdAt: i.createdAt.getTime() } as App)) } };
 };

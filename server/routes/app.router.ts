@@ -19,6 +19,6 @@ appRouter.delete("/:id", verifyToken, deleteApp);
 appRouter.patch("/:id", verifyToken, patchApp);
 
 appRouter.delete("/:id/analytics", verifyToken, deleteAnalyticsForApp);
-appRouter.use("/:id/analytics", analyticsRouter);
+appRouter.use(analyticsRouter);
 
 export default appRouter;
